@@ -25,10 +25,36 @@ android {
         }
     }
 
+    // Signing configuration for local builds
+    signingConfigs {
+        release {
+            // Load from local.properties if available
+            def localProperties = new Properties()
+            def localPropertiesFile = rootProject.file('local.properties')
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.withInputStream { localProperties.load(it) }
+            }
+
+            storeFile localProperties.getProperty('KEYSTORE_FILE') ? file(localProperties.getProperty('KEYSTORE_FILE')) : null
+            storePassword localProperties.getProperty('KEYSTORE_PASSWORD')
+            keyAlias localProperties.getProperty('KEY_ALIAS')
+            keyPassword localProperties.getProperty('KEY_PASSWORD')
+        }
+    }
+
     buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Sign with release config if available
+            if (signingConfigs.release.storeFile != null) {
+                signingConfig signingConfigs.release
+            }
         }
     }
     compileOptions {

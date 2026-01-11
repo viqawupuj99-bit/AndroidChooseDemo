@@ -14,3 +14,8 @@
 .cxx
 local.properties
 /.idea/
+
+# Keystore files - never commit these!
+*.jks
+*.keystore
+release-keystore.jks
